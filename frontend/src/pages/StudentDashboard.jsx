@@ -6,6 +6,7 @@ const bars = [2, 6, 9, 7, 8, 5, 9, 10, 8, 7, 6, 8];
 
 export default function StudentDashboard() {
   const { username, logout } = useAuth();
+  const [tab, setTab] = useState("dashboard");
   const [profile, setProfile] = useState(null);
   const [marks, setMarks] = useState([]);
   const [analytics, setAnalytics] = useState(null);
@@ -37,10 +38,18 @@ export default function StudentDashboard() {
               <p>{profile?.className || "-"} Section {profile?.section || "-"}</p>
             </div>
             <nav className="nav">
-              <button className="active">Dashboard</button>
-              <button>Marks</button>
-              <button>Attendance</button>
-              <button>Calendar</button>
+              <button className={tab === "dashboard" ? "active" : ""} onClick={() => setTab("dashboard")}>
+                Dashboard
+              </button>
+              <button className={tab === "marks" ? "active" : ""} onClick={() => setTab("marks")}>
+                Marks
+              </button>
+              <button className={tab === "attendance" ? "active" : ""} onClick={() => setTab("attendance")}>
+                Attendance
+              </button>
+              <button className={tab === "calendar" ? "active" : ""} onClick={() => setTab("calendar")}>
+                Calendar
+              </button>
             </nav>
           </div>
           <button className="ghost-btn full" onClick={logout}>
@@ -55,7 +64,7 @@ export default function StudentDashboard() {
           </header>
           {error && <div className="error">{error}</div>}
 
-          <section className="dash-grid">
+          {tab === "dashboard" && <section className="dash-grid">
             <article className="dash-card">
               <h3>GPA</h3>
               <div className="big">{analytics?.gpa ?? "-"}</div>
@@ -105,21 +114,49 @@ export default function StudentDashboard() {
               <h3>Recommendation</h3>
               <p className="rec">{analytics?.recommendation}</p>
             </article>
-          </section>
+          </section>}
 
-          <section className="dash-card">
-            <h3>Exam History</h3>
-            <ul className="list clean">
-              {marks.map((m) => (
-                <li key={m.id}>
-                  {m.subject} ({m.examType})
-                  <span>
-                    {m.marks} | Sem {m.semester} | {m.date}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {tab === "marks" && (
+            <section className="dash-card">
+              <h3>Exam History</h3>
+              <ul className="list clean">
+                {marks.map((m) => (
+                  <li key={m.id}>
+                    {m.subject} ({m.examType})
+                    <span>
+                      {m.marks} | Sem {m.semester} | {m.date}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {tab === "attendance" && (
+            <section className="dash-card">
+              <h3>Attendance Summary</h3>
+              <p className="rec">
+                Current attendance: <strong>{analytics?.attendancePercentage ?? "-"}%</strong>
+                <br />
+                Target weekly attendance: <strong>85%</strong>
+                <br />
+                Recommendation: stay above 80% to keep low-risk status.
+              </p>
+            </section>
+          )}
+
+          {tab === "calendar" && (
+            <section className="dash-card">
+              <h3>Study Calendar</h3>
+              <p className="rec">
+                Tue 07:00 - Mathematics revision
+                <br />
+                Wed 18:00 - Science mock test
+                <br />
+                Fri 17:30 - English writing practice
+              </p>
+            </section>
+          )}
         </main>
       </div>
     </div>

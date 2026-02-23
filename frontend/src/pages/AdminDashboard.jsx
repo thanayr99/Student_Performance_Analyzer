@@ -30,6 +30,7 @@ function Sparkline() {
 
 export default function AdminDashboard() {
   const { username, logout } = useAuth();
+  const [tab, setTab] = useState("dashboard");
   const [students, setStudents] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [registrations, setRegistrations] = useState([]);
@@ -97,11 +98,21 @@ export default function AdminDashboard() {
               <p>admin@academy.com</p>
             </div>
             <nav className="nav">
-              <button className="active">Dashboard</button>
-              <button>Students</button>
-              <button>Subjects</button>
-              <button>Calendar</button>
-              <button>Reports</button>
+              <button className={tab === "dashboard" ? "active" : ""} onClick={() => setTab("dashboard")}>
+                Dashboard
+              </button>
+              <button className={tab === "students" ? "active" : ""} onClick={() => setTab("students")}>
+                Students
+              </button>
+              <button className={tab === "subjects" ? "active" : ""} onClick={() => setTab("subjects")}>
+                Subjects
+              </button>
+              <button className={tab === "calendar" ? "active" : ""} onClick={() => setTab("calendar")}>
+                Calendar
+              </button>
+              <button className={tab === "reports" ? "active" : ""} onClick={() => setTab("reports")}>
+                Reports
+              </button>
             </nav>
           </div>
           <button className="ghost-btn full" onClick={logout}>
@@ -116,7 +127,7 @@ export default function AdminDashboard() {
           </header>
           {error && <div className="error">{error}</div>}
 
-          <section className="dash-grid">
+          {tab === "dashboard" && <section className="dash-grid">
             <article className="dash-card span-2">
               <div className="card-head">
                 <h3>Performance</h3>
@@ -177,9 +188,9 @@ export default function AdminDashboard() {
                 ))}
               </ul>
             </article>
-          </section>
+          </section>}
 
-          <section className="forms-grid">
+          {tab === "students" && <section className="forms-grid">
             <article className="dash-card">
               <h3>Add Student</h3>
               <form
@@ -202,8 +213,26 @@ export default function AdminDashboard() {
                 <button className="primary-btn">Add Student</button>
               </form>
             </article>
+            <article className="dash-card span-2">
+              <h3>Manage Students</h3>
+              <ul className="list clean">
+                {students.map((s) => (
+                  <li key={s.id}>
+                    {s.name} ({s.className}-{s.section})
+                    <span>
+                      @{s.username}
+                      <button className="mini-btn" onClick={() => perform(() => dashboardService.deleteStudent(s.id))}>
+                        delete
+                      </button>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </section>}
 
-            <article className="dash-card">
+          {tab === "subjects" && <section className="forms-grid">
+            <article className="dash-card span-2">
               <h3>Add Subject</h3>
               <form
                 className="stack"
@@ -267,38 +296,39 @@ export default function AdminDashboard() {
                 <button className="primary-btn">Create User</button>
               </form>
             </article>
-          </section>
+          </section>}
 
-          <section className="dash-card">
-            <h3>Manage Students / Registrations</h3>
-            <ul className="list clean">
-              {students.map((s) => (
-                <li key={s.id}>
-                  {s.name} ({s.className}-{s.section})
-                  <span>
-                    @{s.username}
-                    <button className="mini-btn" onClick={() => perform(() => dashboardService.deleteStudent(s.id))}>
-                      delete student
-                    </button>
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <hr />
-            <ul className="list clean">
-              {registrations.map((r) => (
-                <li key={r.id}>
-                  {r.username}
-                  <span>
-                    {r.role}
-                    <button className="mini-btn" onClick={() => perform(() => dashboardService.deleteRegistration(r.id))}>
-                      delete user
-                    </button>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {tab === "calendar" && (
+            <section className="dash-card">
+              <h3>Calendar</h3>
+              <p className="rec">
+                09:00 - Subject planning
+                <br />
+                11:30 - Parent follow-up
+                <br />
+                14:00 - Mentoring session (high-risk group)
+              </p>
+            </section>
+          )}
+
+          {tab === "reports" && (
+            <section className="dash-card">
+              <h3>Registration Report</h3>
+              <ul className="list clean">
+                {registrations.map((r) => (
+                  <li key={r.id}>
+                    {r.username}
+                    <span>
+                      {r.role}
+                      <button className="mini-btn" onClick={() => perform(() => dashboardService.deleteRegistration(r.id))}>
+                        delete
+                      </button>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </main>
       </div>
     </div>
