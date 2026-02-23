@@ -44,11 +44,60 @@ function readStore() {
     localStorage.setItem(STORE_KEY, JSON.stringify(initialState));
     return structuredClone(initialState);
   }
-  return JSON.parse(raw);
+  const parsed = JSON.parse(raw);
+  const repaired = ensureSeedIntegrity(parsed);
+  if (repaired.__changed) {
+    delete repaired.__changed;
+    writeStore(repaired);
+  }
+  return repaired;
 }
 
 function writeStore(data) {
   localStorage.setItem(STORE_KEY, JSON.stringify(data));
+}
+
+function ensureSeedIntegrity(data) {
+  const clone = structuredClone(data);
+  let changed = false;
+
+  if (!clone.users.some((u) => u.username === "admin")) {
+    clone.users.unshift({
+      id: nextId(clone.users),
+      username: "admin",
+      password: "admin123",
+      role: "ADMIN",
+      profile: { name: "Sasha Groen", className: "Faculty", section: "A" }
+    });
+    changed = true;
+  }
+
+  if (!clone.users.some((u) => u.username === "student1")) {
+    clone.users.push({
+      id: nextId(clone.users),
+      username: "student1",
+      password: "student123",
+      role: "STUDENT",
+      profile: { name: "John Carter", className: "10", section: "A" }
+    });
+    changed = true;
+  }
+
+  if (!clone.students.some((s) => s.username === "student1")) {
+    clone.students.unshift({
+      id: nextId(clone.students),
+      username: "student1",
+      name: "John Carter",
+      className: "10",
+      section: "A",
+      attendance: 82,
+      gpa: 7.6
+    });
+    changed = true;
+  }
+
+  if (changed) clone.__changed = true;
+  return clone;
 }
 
 function nextId(items) {
@@ -211,6 +260,10 @@ export const mockStore = {
   async deleteRegistration(id) {
     const db = readStore();
     const target = db.users.find((u) => u.id === id);
+    if (!target) return delay(true);
+    if (target.username === "admin") {
+      throw new Error("Seed admin cannot be deleted in demo mode");
+    }
     db.users = db.users.filter((u) => u.id !== id);
     if (target?.role === "STUDENT") {
       db.students = db.students.filter((s) => s.username !== target.username);
