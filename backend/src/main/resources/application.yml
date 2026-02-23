@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/student_performance?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+  sql:
+    init:
+      mode: always
+
+jwt:
+  secret: ${JWT_SECRET:change-this-secret-key-change-this-secret-key}
+  expiration-ms: 86400000
+
+app:
+  prediction:
+    flask-enabled: ${FLASK_PREDICTION_ENABLED:false}
+    flask-url: ${FLASK_PREDICTION_URL:http://localhost:5000/predict}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
