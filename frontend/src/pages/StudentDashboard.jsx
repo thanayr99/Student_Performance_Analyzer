@@ -7,6 +7,7 @@ const bars = [2, 6, 9, 7, 8, 5, 9, 10, 8, 7, 6, 8];
 export default function StudentDashboard() {
   const { username, logout } = useAuth();
   const [tab, setTab] = useState("dashboard");
+  const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const [marks, setMarks] = useState([]);
   const [analytics, setAnalytics] = useState(null);
@@ -15,12 +16,15 @@ export default function StudentDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
+        setLoading(true);
         const data = await dashboardService.getStudentDashboard(username);
         setProfile(data.profile);
         setMarks(data.marks);
         setAnalytics(data.analytics);
       } catch (err) {
         setError(err?.message || "Unable to load dashboard");
+      } finally {
+        setLoading(false);
       }
     };
     load();
@@ -63,8 +67,19 @@ export default function StudentDashboard() {
             <div className="search-chip">Student View</div>
           </header>
           {error && <div className="error">{error}</div>}
+          {loading && (
+            <section className="dash-grid">
+              <article className="dash-card skeleton h120" />
+              <article className="dash-card skeleton h120" />
+              <article className="dash-card skeleton h120" />
+              <article className="dash-card skeleton h120" />
+              <article className="dash-card skeleton h160 span-2" />
+              <article className="dash-card skeleton h160" />
+              <article className="dash-card skeleton h160 span-2" />
+            </section>
+          )}
 
-          {tab === "dashboard" && <section className="dash-grid">
+          {!loading && tab === "dashboard" && <section className="dash-grid">
             <article className="dash-card">
               <h3>GPA</h3>
               <div className="big">{analytics?.gpa ?? "-"}</div>
@@ -100,6 +115,9 @@ export default function StudentDashboard() {
 
             <article className="dash-card">
               <h3>Subject Averages</h3>
+              {(analytics?.subjectAverages || []).length === 0 ? (
+                <div className="empty-state">No subject averages available.</div>
+              ) : (
               <ul className="list clean tight">
                 {(analytics?.subjectAverages || []).map((s) => (
                   <li key={s.subject}>
@@ -108,6 +126,7 @@ export default function StudentDashboard() {
                   </li>
                 ))}
               </ul>
+              )}
             </article>
 
             <article className="dash-card span-2">
@@ -116,9 +135,12 @@ export default function StudentDashboard() {
             </article>
           </section>}
 
-          {tab === "marks" && (
+          {!loading && tab === "marks" && (
             <section className="dash-card">
               <h3>Exam History</h3>
+              {marks.length === 0 ? (
+                <div className="empty-state">No marks recorded yet.</div>
+              ) : (
               <ul className="list clean">
                 {marks.map((m) => (
                   <li key={m.id}>
@@ -129,10 +151,11 @@ export default function StudentDashboard() {
                   </li>
                 ))}
               </ul>
+              )}
             </section>
           )}
 
-          {tab === "attendance" && (
+          {!loading && tab === "attendance" && (
             <section className="dash-card">
               <h3>Attendance Summary</h3>
               <p className="rec">
@@ -145,7 +168,7 @@ export default function StudentDashboard() {
             </section>
           )}
 
-          {tab === "calendar" && (
+          {!loading && tab === "calendar" && (
             <section className="dash-card">
               <h3>Study Calendar</h3>
               <p className="rec">

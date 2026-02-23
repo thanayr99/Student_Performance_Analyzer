@@ -31,6 +31,7 @@ function Sparkline() {
 export default function AdminDashboard() {
   const { username, logout } = useAuth();
   const [tab, setTab] = useState("dashboard");
+  const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [registrations, setRegistrations] = useState([]);
@@ -50,6 +51,7 @@ export default function AdminDashboard() {
 
   const load = async () => {
     try {
+      setLoading(true);
       setError("");
       const data = await dashboardService.getAdminDashboard();
       setStudents(data.students);
@@ -59,6 +61,8 @@ export default function AdminDashboard() {
       setRiskReport(data.riskReport);
     } catch (err) {
       setError(err?.message || "Failed to load dashboard");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,8 +130,19 @@ export default function AdminDashboard() {
             <div className="search-chip">Review Mode</div>
           </header>
           {error && <div className="error">{error}</div>}
+          {loading && (
+            <section className="dash-grid">
+              <article className="dash-card skeleton h120" />
+              <article className="dash-card skeleton h120" />
+              <article className="dash-card skeleton h120" />
+              <article className="dash-card skeleton h120" />
+              <article className="dash-card skeleton h160 span-2" />
+              <article className="dash-card skeleton h160" />
+              <article className="dash-card skeleton h160" />
+            </section>
+          )}
 
-          {tab === "dashboard" && <section className="dash-grid">
+          {!loading && tab === "dashboard" && <section className="dash-grid">
             <article className="dash-card span-2">
               <div className="card-head">
                 <h3>Performance</h3>
@@ -167,6 +182,9 @@ export default function AdminDashboard() {
 
             <article className="dash-card">
               <h3>Top Performers</h3>
+              {(analytics?.topPerformers || []).length === 0 ? (
+                <div className="empty-state">No performers available yet.</div>
+              ) : (
               <ul className="list clean">
                 {(analytics?.topPerformers || []).map((p) => (
                   <li key={p.studentId}>
@@ -175,10 +193,14 @@ export default function AdminDashboard() {
                   </li>
                 ))}
               </ul>
+              )}
             </article>
 
             <article className="dash-card">
               <h3>Risk Report</h3>
+              {riskReport.length === 0 ? (
+                <div className="empty-state">No at-risk students in current dataset.</div>
+              ) : (
               <ul className="list clean">
                 {riskReport.map((r) => (
                   <li key={r.studentId}>
@@ -187,10 +209,11 @@ export default function AdminDashboard() {
                   </li>
                 ))}
               </ul>
+              )}
             </article>
           </section>}
 
-          {tab === "students" && <section className="forms-grid">
+          {!loading && tab === "students" && <section className="forms-grid">
             <article className="dash-card">
               <h3>Add Student</h3>
               <form
@@ -215,6 +238,9 @@ export default function AdminDashboard() {
             </article>
             <article className="dash-card span-2">
               <h3>Manage Students</h3>
+              {students.length === 0 ? (
+                <div className="empty-state">No students found. Add one using the form.</div>
+              ) : (
               <ul className="list clean">
                 {students.map((s) => (
                   <li key={s.id}>
@@ -228,10 +254,11 @@ export default function AdminDashboard() {
                   </li>
                 ))}
               </ul>
+              )}
             </article>
           </section>}
 
-          {tab === "subjects" && <section className="forms-grid">
+          {!loading && tab === "subjects" && <section className="forms-grid">
             <article className="dash-card span-2">
               <h3>Add Subject</h3>
               <form
@@ -248,6 +275,9 @@ export default function AdminDashboard() {
                 <input type="number" min="1" max="10" placeholder="Credits" value={subjectForm.credits} onChange={(e) => setSubjectForm({ ...subjectForm, credits: e.target.value })} required />
                 <button className="primary-btn">Add Subject</button>
               </form>
+              {subjects.length === 0 ? (
+                <div className="empty-state">No subjects yet. Add the first subject.</div>
+              ) : (
               <ul className="list clean tight">
                 {subjects.map((s) => (
                   <li key={s.id}>
@@ -261,6 +291,7 @@ export default function AdminDashboard() {
                   </li>
                 ))}
               </ul>
+              )}
             </article>
 
             <article className="dash-card">
@@ -298,7 +329,7 @@ export default function AdminDashboard() {
             </article>
           </section>}
 
-          {tab === "calendar" && (
+          {!loading && tab === "calendar" && (
             <section className="dash-card">
               <h3>Calendar</h3>
               <p className="rec">
@@ -311,9 +342,12 @@ export default function AdminDashboard() {
             </section>
           )}
 
-          {tab === "reports" && (
+          {!loading && tab === "reports" && (
             <section className="dash-card">
               <h3>Registration Report</h3>
+              {registrations.length === 0 ? (
+                <div className="empty-state">No registrations available.</div>
+              ) : (
               <ul className="list clean">
                 {registrations.map((r) => (
                   <li key={r.id}>
@@ -327,6 +361,7 @@ export default function AdminDashboard() {
                   </li>
                 ))}
               </ul>
+              )}
             </section>
           )}
         </main>

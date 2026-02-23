@@ -256,7 +256,8 @@ button {
 }
 
 .panel-head h1 {
-  font-size: 2rem;
+  font-size: clamp(1.7rem, 2.8vw, 2.2rem);
+  letter-spacing: 0.2px;
 }
 
 .search-chip {
@@ -282,7 +283,8 @@ button {
 
 .dash-card h3 {
   margin-bottom: 8px;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
+  font-weight: 600;
 }
 
 .dash-card p {
@@ -427,6 +429,44 @@ button {
 .rec {
   font-size: 0.98rem;
   line-height: 1.45;
+}
+
+.empty-state {
+  border: 1px dashed #3f3f66;
+  background: #1b1b2a;
+  border-radius: 10px;
+  padding: 12px;
+  color: #b7b8d2;
+  font-size: 0.92rem;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #1f1f31;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: shimmer 1.1s infinite;
+}
+
+.h120 {
+  min-height: 120px;
+}
+
+.h160 {
+  min-height: 160px;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 hr {
