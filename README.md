@@ -94,6 +94,39 @@ Services:
 - ML API: `http://localhost:5000`
 - MySQL: `localhost:3306`
 
+## Render Deployment
+
+This repo is now prepared for Render using [render.yaml](./render.yaml).
+
+Services defined:
+- `student-performance-frontend`: Render Static Site
+- `student-performance-backend`: Render Docker Web Service
+- `mysql`: Render Docker Private Service with persistent disk
+- `ml-service`: optional Render Docker Private Service
+
+Important first-deploy values:
+- `VITE_API_BASE_URL`
+  - set this to your backend public URL, for example `https://student-performance-backend.onrender.com`
+- `APP_CORS_ALLOWED_ORIGINS`
+  - set this to your frontend public URL, for example `https://student-performance-frontend.onrender.com`
+- `MYSQL_PASSWORD`
+- `MYSQL_ROOT_PASSWORD`
+
+Recommended deploy order on Render:
+1. Create the Blueprint from this repo.
+2. When prompted, enter secure MySQL passwords.
+3. Set `VITE_API_BASE_URL` to the backend public URL.
+4. Set `APP_CORS_ALLOWED_ORIGINS` to the frontend public URL.
+5. Deploy the stack.
+
+Notes:
+- Render documents Docker-based services and Blueprint YAML in its official docs:
+  - https://render.com/docs/docker
+  - https://render.com/docs/blueprint-spec
+  - https://render.com/docs/deploy-mysql
+- The frontend is configured as a static SPA with a rewrite to `index.html`.
+- The backend health check uses `/actuator/health`.
+
 ## Demo Credentials
 
 - Admin: `admin / admin123`
