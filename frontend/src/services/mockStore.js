@@ -214,6 +214,35 @@ export const mockStore = {
     return delay(true);
   },
 
+  async updateStudent(id, payload) {
+    const db = readStore();
+    const student = db.students.find((item) => item.id === id);
+    if (!student) throw new Error("Student not found");
+    if (payload.username && payload.username !== student.username && db.users.some((u) => u.username === payload.username)) {
+      throw new Error("Username already exists");
+    }
+
+    const previousUsername = student.username;
+    student.username = payload.username || student.username;
+    student.name = payload.name;
+    student.className = payload.className;
+    student.section = payload.section;
+
+    const user = db.users.find((item) => item.username === previousUsername);
+    if (user) {
+      user.username = student.username;
+      user.profile = { name: payload.name, className: payload.className, section: payload.section };
+    }
+
+    if (db.studentMarks[previousUsername] && previousUsername !== student.username) {
+      db.studentMarks[student.username] = db.studentMarks[previousUsername];
+      delete db.studentMarks[previousUsername];
+    }
+
+    writeStore(db);
+    return delay(true);
+  },
+
   async createSubject(payload) {
     const db = readStore();
     db.subjects.push({ id: nextId(db.subjects), name: payload.name, credits: Number(payload.credits) });
@@ -224,6 +253,16 @@ export const mockStore = {
   async deleteSubject(id) {
     const db = readStore();
     db.subjects = db.subjects.filter((s) => s.id !== id);
+    writeStore(db);
+    return delay(true);
+  },
+
+  async updateSubject(id, payload) {
+    const db = readStore();
+    const subject = db.subjects.find((item) => item.id === id);
+    if (!subject) throw new Error("Subject not found");
+    subject.name = payload.name;
+    subject.credits = Number(payload.credits);
     writeStore(db);
     return delay(true);
   },
@@ -268,6 +307,61 @@ export const mockStore = {
     if (target?.role === "STUDENT") {
       db.students = db.students.filter((s) => s.username !== target.username);
     }
+    writeStore(db);
+    return delay(true);
+  },
+
+  async updateRegistration(id, payload) {
+    const db = readStore();
+    const registration = db.users.find((item) => item.id === id);
+    if (!registration) throw new Error("Registration not found");
+    if (
+      payload.username &&
+      payload.username !== registration.username &&
+      db.users.some((item) => item.username === payload.username)
+    ) {
+      throw new Error("Username already exists");
+    }
+
+    const previousUsername = registration.username;
+    registration.username = payload.username;
+    registration.role = payload.role;
+    if (payload.password) {
+      registration.password = payload.password;
+    }
+    registration.profile = {
+      name: payload.name || payload.username,
+      className: payload.className || registration.profile?.className || "",
+      section: payload.section || registration.profile?.section || ""
+    };
+
+    const student = db.students.find((item) => item.username === previousUsername);
+    if (payload.role === "STUDENT") {
+      if (student) {
+        student.username = payload.username;
+        student.name = payload.name || payload.username;
+        student.className = payload.className || student.className;
+        student.section = payload.section || student.section;
+      } else {
+        db.students.push({
+          id: nextId(db.students),
+          username: payload.username,
+          name: payload.name || payload.username,
+          className: payload.className || "10",
+          section: payload.section || "A",
+          attendance: 76,
+          gpa: 6.9
+        });
+      }
+    } else if (student) {
+      db.students = db.students.filter((item) => item.username !== previousUsername);
+    }
+
+    if (db.studentMarks[previousUsername] && previousUsername !== payload.username) {
+      db.studentMarks[payload.username] = db.studentMarks[previousUsername];
+      delete db.studentMarks[previousUsername];
+    }
+
     writeStore(db);
     return delay(true);
   },

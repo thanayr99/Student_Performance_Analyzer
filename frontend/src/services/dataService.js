@@ -8,6 +8,10 @@ export const authService = {
     if (useMock) return mockStore.login(credentials);
     const { data } = await api.post("/auth/login", credentials);
     return data;
+  },
+  register: async (payload) => {
+    const { data } = await api.post("/auth/register", payload);
+    return data;
   }
 };
 
@@ -30,11 +34,17 @@ export const dashboardService = {
     };
   },
   createStudent: async (payload) => (useMock ? mockStore.createStudent(payload) : api.post("/admin/students", payload)),
+  updateStudent: async (id, payload) =>
+    (useMock ? mockStore.updateStudent(id, payload) : api.put(`/admin/students/${id}`, payload)),
   deleteStudent: async (id) => (useMock ? mockStore.deleteStudent(id) : api.delete(`/admin/students/${id}`)),
   createSubject: async (payload) => (useMock ? mockStore.createSubject(payload) : api.post("/admin/subjects", payload)),
+  updateSubject: async (id, payload) =>
+    (useMock ? mockStore.updateSubject(id, payload) : api.put(`/admin/subjects/${id}`, payload)),
   deleteSubject: async (id) => (useMock ? mockStore.deleteSubject(id) : api.delete(`/admin/subjects/${id}`)),
   createRegistration: async (payload) =>
     useMock ? mockStore.createRegistration(payload) : api.post("/admin/registrations", payload),
+  updateRegistration: async (id, payload) =>
+    (useMock ? mockStore.updateRegistration(id, payload) : api.put(`/admin/registrations/${id}`, payload)),
   deleteRegistration: async (id) =>
     useMock ? mockStore.deleteRegistration(id) : api.delete(`/admin/registrations/${id}`),
   getStudentDashboard: async (username) => {

@@ -132,7 +132,8 @@ public class AnalyticsService {
     }
 
     private void upsertAnalytics(Student student, Double gpa, Double predictedScore, RiskLevel risk, Double improvementIndex) {
-        PerformanceAnalytics analytics = performanceAnalyticsRepository.findByStudent(student).orElseGet(PerformanceAnalytics::new);
+        PerformanceAnalytics analytics = performanceAnalyticsRepository.findByStudentId(student.getId())
+                .orElseGet(PerformanceAnalytics::new);
         analytics.setStudent(student);
         analytics.setGpa(gpa);
         analytics.setPredictedScore(round2(predictedScore));

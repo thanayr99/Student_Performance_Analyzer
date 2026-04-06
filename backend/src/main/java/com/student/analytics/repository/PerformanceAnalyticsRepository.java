@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface PerformanceAnalyticsRepository extends JpaRepository<PerformanceAnalytics, Long> {
     Optional<PerformanceAnalytics> findByStudent(Student student);
+    Optional<PerformanceAnalytics> findByStudentId(Long studentId);
 }
