@@ -10,6 +10,13 @@ const initialState = {
       profile: { name: "Sasha Groen", className: "Faculty", section: "A" }
     },
     {
+      id: 3,
+      username: "teacher",
+      password: "teacher123",
+      role: "TEACHER",
+      profile: { name: "Anita Sharma", className: "Faculty", section: "B" }
+    },
+    {
       id: 2,
       username: "student1",
       password: "student123",
@@ -79,6 +86,17 @@ function ensureSeedIntegrity(data) {
       password: "student123",
       role: "STUDENT",
       profile: { name: "John Carter", className: "10", section: "A" }
+    });
+    changed = true;
+  }
+
+  if (!clone.users.some((u) => u.username === "teacher")) {
+    clone.users.push({
+      id: nextId(clone.users),
+      username: "teacher",
+      password: "teacher123",
+      role: "TEACHER",
+      profile: { name: "Anita Sharma", className: "Faculty", section: "B" }
     });
     changed = true;
   }
@@ -397,5 +415,58 @@ export const mockStore = {
       marks,
       analytics
     });
+  },
+
+  async getTeacherDashboard() {
+    const db = readStore();
+    return delay({
+      students: db.students,
+      subjects: db.subjects,
+      performance: db.students.map((student) => ({
+        studentId: student.id,
+        username: student.username,
+        name: student.name,
+        className: student.className,
+        section: student.section,
+        cgpa: student.gpa,
+        attendancePercentage: student.attendance,
+        predictedScore: Math.min(100, Math.round((student.gpa * 10 + student.attendance) / 2)),
+        riskLevel: riskFrom(student),
+        subjectAverages: [
+          { subject: "Mathematics", averageMarks: 78.2 },
+          { subject: "Science", averageMarks: 72.6 }
+        ],
+        recommendation: "Review marks and attendance regularly to guide intervention."
+      }))
+    });
+  },
+
+  async addMarks(payload) {
+    const db = readStore();
+    const student = db.students.find((item) => item.id === Number(payload.studentId));
+    const subject = db.subjects.find((item) => item.id === Number(payload.subjectId));
+    if (!student || !subject) throw new Error("Student or subject not found");
+    const marks = db.studentMarks[student.username] || [];
+    marks.push({
+      id: nextId(marks),
+      subject: subject.name,
+      marks: Number(payload.marks),
+      examType: payload.examType,
+      semester: Number(payload.semester),
+      date: payload.date
+    });
+    db.studentMarks[student.username] = marks;
+    student.gpa = Math.round((marks.reduce((sum, item) => sum + Number(item.marks), 0) / marks.length / 10) * 100) / 100;
+    writeStore(db);
+    return delay(true);
+  },
+
+  async addAttendance(payload) {
+    const db = readStore();
+    const student = db.students.find((item) => item.id === Number(payload.studentId));
+    if (!student) throw new Error("Student not found");
+    student.attendance = Number(payload.attendancePercentage);
+    writeStore(db);
+    return delay(true);
   }
 };

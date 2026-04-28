@@ -23,6 +23,7 @@ database/     SQL schema + sample data
 - JWT authentication (`/auth/register`, `/auth/login`)
 - Role-based authorization
   - `/admin/**` for `ROLE_ADMIN`
+  - `/teacher/**` for `ROLE_TEACHER`
   - `/student/**` for `ROLE_STUDENT`
 - Student analytics:
   - credit-weighted GPA
@@ -39,6 +40,10 @@ database/     SQL schema + sample data
   - subject difficulty index
   - top 5 performers
   - CSV export of risk report
+- Teacher workflows:
+  - add and delete students
+  - add attendance and marks
+  - view student CGPA, attendance percentage, risk level, recommendations, and subject performance
 
 ## Backend Setup
 
@@ -89,14 +94,15 @@ docker compose up --build
 ```
 
 Services:
-- Backend: `http://localhost:8080`
-- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:18080`
+- Frontend: `http://localhost:15173`
 - ML API: `http://localhost:5000`
-- MySQL: `localhost:3306`
+- MySQL inside Docker network: `mysql:3306`
 
 ## Render Deployment
 
 This repo is now prepared for Render using [render.yaml](./render.yaml).
+For a fuller checklist, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 Services defined:
 - `student-performance-frontend`: Render Static Site
@@ -130,6 +136,7 @@ Notes:
 ## Demo Credentials
 
 - Admin: `admin / admin123`
+- Teacher: `teacher / teacher123`
 - Student: `student1 / student123`
 
 These are seeded by `backend/src/main/java/com/student/analytics/config/DataInitializer.java`.
@@ -147,6 +154,15 @@ These are seeded by `backend/src/main/java/com/student/analytics/config/DataInit
 - `GET /admin/risk-report/export`
 - `POST /admin/marks`
 - `POST /admin/attendance`
+
+### Teacher
+- `GET /teacher/students`
+- `POST /teacher/students`
+- `DELETE /teacher/students/{studentId}`
+- `GET /teacher/subjects`
+- `POST /teacher/marks`
+- `POST /teacher/attendance`
+- `GET /teacher/performance`
 
 ### Student
 - `GET /student/profile`

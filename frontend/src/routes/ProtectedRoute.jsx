@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children, role }) {
   }
 
   if (role && role !== currentRole) {
-    const redirect = currentRole === "ADMIN" ? "/admin" : "/student";
+    const redirect = currentRole === "ADMIN" ? "/admin" : currentRole === "TEACHER" ? "/teacher" : "/student";
     return <Navigate to={redirect} replace />;
   }
 

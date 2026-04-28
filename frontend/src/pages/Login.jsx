@@ -7,7 +7,7 @@ import { validateLogin } from "../utils/validation";
 
 const highlights = [
   "Institution-ready login experience",
-  "Role-aware access for admin and student users",
+  "Role-aware access for admin, teacher, and student users",
   "Directly wired to the existing Spring Boot authentication backend"
 ];
 
@@ -29,6 +29,10 @@ export default function Login() {
       setForm({ username: "admin", password: "admin123" });
       return;
     }
+    if (nextMode === "teacher") {
+      setForm({ username: "teacher", password: "teacher123" });
+      return;
+    }
     setForm({ username: "student1", password: "student123" });
   };
 
@@ -47,7 +51,7 @@ export default function Login() {
     setLoading(true);
     try {
       const data = await login(form);
-      navigate(data.role === "ADMIN" ? "/admin" : "/student");
+      navigate(data.role === "ADMIN" ? "/admin" : data.role === "TEACHER" ? "/teacher" : "/student");
     } catch (err) {
       setError(extractErrorMessage(err, "Login failed"));
     } finally {
@@ -92,6 +96,13 @@ export default function Login() {
           <div className="auth-tabs">
             <button className={`tab-btn ${mode === "admin" ? "active" : ""}`} type="button" onClick={() => applyPreset("admin")}>
               Admin
+            </button>
+            <button
+              className={`tab-btn ${mode === "teacher" ? "active" : ""}`}
+              type="button"
+              onClick={() => applyPreset("teacher")}
+            >
+              Teacher
             </button>
             <button
               className={`tab-btn ${mode === "student" ? "active" : ""}`}
@@ -150,6 +161,10 @@ export default function Login() {
             <article className="auth-feature-card">
               <strong>Seed admin</strong>
               <p className="muted-copy">admin / admin123</p>
+            </article>
+            <article className="auth-feature-card">
+              <strong>Seed teacher</strong>
+              <p className="muted-copy">teacher / teacher123</p>
             </article>
             <article className="auth-feature-card">
               <strong>Seed student</strong>

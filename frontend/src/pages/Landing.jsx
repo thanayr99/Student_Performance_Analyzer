@@ -19,7 +19,7 @@ const features = [
   },
   {
     title: "Student Insights",
-    description: "Deliver role-based experiences for administrators and students with cleaner information design."
+    description: "Deliver role-based experiences for administrators, teachers, and students with cleaner information design."
   },
   {
     title: "Actionable Recommendations",
@@ -69,7 +69,7 @@ export default function Landing() {
             </h1>
             <p className="hero-copy">
               Move beyond spreadsheets and scattered reports. Student Performance Analyzer creates a premium command
-              center for administrators and students with predictive risk detection, attendance intelligence, and
+              center for administrators, teachers, and students with predictive risk detection, attendance intelligence, and
               academic insights that are easier to act on.
             </p>
 
@@ -164,6 +164,19 @@ export default function Landing() {
               <li>Campus-wide analytics</li>
               <li>Risk and intervention monitoring</li>
               <li>Registration and academic operations</li>
+            </ul>
+          </article>
+
+          <article className="role-card">
+            <h3>For Teachers</h3>
+            <p>
+              Add or remove students, provide attendance, allot marks, and review CGPA-backed performance analysis from
+              one classroom operations dashboard.
+            </p>
+            <ul className="role-list">
+              <li>Student record management</li>
+              <li>Marks and attendance entry</li>
+              <li>CGPA and performance analysis</li>
             </ul>
           </article>
 

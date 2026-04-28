@@ -30,6 +30,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepository.count() > 0) {
+            seedTeacherIfMissing();
             return;
         }
 
@@ -38,6 +39,12 @@ public class DataInitializer implements CommandLineRunner {
         admin.setPassword(passwordEncoder.encode("admin123"));
         admin.setRole(Role.ADMIN);
         userRepository.save(admin);
+
+        User teacher = new User();
+        teacher.setUsername("teacher");
+        teacher.setPassword(passwordEncoder.encode("teacher123"));
+        teacher.setRole(Role.TEACHER);
+        userRepository.save(teacher);
 
         User studentUser = new User();
         studentUser.setUsername("student1");
@@ -76,6 +83,17 @@ public class DataInitializer implements CommandLineRunner {
         attendance.setStudent(student);
         attendance.setAttendancePercentage(82.0);
         attendanceRepository.save(attendance);
+    }
+
+    private void seedTeacherIfMissing() {
+        if (userRepository.existsByUsername("teacher")) {
+            return;
+        }
+        User teacher = new User();
+        teacher.setUsername("teacher");
+        teacher.setPassword(passwordEncoder.encode("teacher123"));
+        teacher.setRole(Role.TEACHER);
+        userRepository.save(teacher);
     }
 
     private Marks createMarks(Student student, Subject subject, Double score, ExamType type, Integer semester, LocalDate date) {

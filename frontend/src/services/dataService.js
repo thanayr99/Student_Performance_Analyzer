@@ -59,5 +59,26 @@ export const dashboardService = {
       marks: marksRes.data,
       analytics: analyticsRes.data
     };
-  }
+  },
+  getTeacherDashboard: async () => {
+    if (useMock) return mockStore.getTeacherDashboard();
+    const [studentsRes, subjectsRes, performanceRes] = await Promise.all([
+      api.get("/teacher/students"),
+      api.get("/teacher/subjects"),
+      api.get("/teacher/performance")
+    ]);
+    return {
+      students: studentsRes.data,
+      subjects: subjectsRes.data,
+      performance: performanceRes.data
+    };
+  },
+  createTeacherStudent: async (payload) =>
+    useMock ? mockStore.createStudent(payload) : api.post("/teacher/students", payload),
+  deleteTeacherStudent: async (id) =>
+    useMock ? mockStore.deleteStudent(id) : api.delete(`/teacher/students/${id}`),
+  addTeacherMarks: async (payload) =>
+    useMock ? mockStore.addMarks(payload) : api.post("/teacher/marks", payload),
+  addTeacherAttendance: async (payload) =>
+    useMock ? mockStore.addAttendance(payload) : api.post("/teacher/attendance", payload)
 };

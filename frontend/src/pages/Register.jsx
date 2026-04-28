@@ -43,7 +43,7 @@ export default function Register() {
         section: form.role === "STUDENT" ? form.section.trim() : ""
       };
       const data = await register(payload);
-      navigate(data.role === "ADMIN" ? "/admin" : "/student");
+      navigate(data.role === "ADMIN" ? "/admin" : data.role === "TEACHER" ? "/teacher" : "/student");
     } catch (err) {
       setError(extractErrorMessage(err, "Registration failed"));
     } finally {
@@ -73,6 +73,10 @@ export default function Register() {
             <article className="auth-feature-card">
               <strong>Student registration</strong>
               <p className="muted-copy">Creates a learner account with name, class, and section fields.</p>
+            </article>
+            <article className="auth-feature-card">
+              <strong>Teacher registration</strong>
+              <p className="muted-copy">Creates an instructor account for student marks, attendance, and performance analysis.</p>
             </article>
             <article className="auth-feature-card">
               <strong>Admin registration</strong>
@@ -142,6 +146,7 @@ export default function Register() {
                   }
                 >
                   <option value="STUDENT">STUDENT</option>
+                  <option value="TEACHER">TEACHER</option>
                   <option value="ADMIN">ADMIN</option>
                 </select>
               </FormField>
@@ -159,7 +164,7 @@ export default function Register() {
               <div className="field">
                 <label htmlFor="reg-role-summary">Access Profile</label>
                 <div className="field-readonly" id="reg-role-summary">
-                  {form.role === "STUDENT" ? "Student account with academic profile" : "Admin account with control access"}
+                  {form.role === "STUDENT" ? "Student account with academic profile" : form.role === "TEACHER" ? "Teacher account with classroom operations access" : "Admin account with control access"}
                 </div>
               </div>
             </div>
