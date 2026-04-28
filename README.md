@@ -4,7 +4,7 @@ Full-stack role-based system for student analytics, risk prediction, and recomme
 
 ## Stack
 
-- Backend: Spring Boot 3, Spring Security, JWT, JPA/Hibernate, MySQL, Swagger, Lombok
+- Backend: Spring Boot 3, Spring Security, JWT, JPA/Hibernate, MySQL/Postgres, Swagger, Lombok
 - Frontend: React (Vite), React Router, Axios, Context API
 - Optional ML: Flask + scikit-learn (`/predict`)
 - Deployment: Docker + Docker Compose
@@ -104,32 +104,30 @@ Services:
 This repo is now prepared for Render using [render.yaml](./render.yaml).
 For a fuller checklist, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
-Services defined:
+Free services defined:
 - `student-performance-frontend`: Render Static Site
-- `student-performance-backend`: Render Docker Web Service
-- `mysql`: Render Docker Private Service with persistent disk
-- `ml-service`: optional Render Docker Private Service
+- `student-performance-backend`: Render Docker Web Service on the free plan
+- `student-performance-db`: Render Postgres on the free plan
 
 Important first-deploy values:
 - `VITE_API_BASE_URL`
   - set this to your backend public URL, for example `https://student-performance-backend.onrender.com`
 - `APP_CORS_ALLOWED_ORIGINS`
   - set this to your frontend public URL, for example `https://student-performance-frontend.onrender.com`
-- `MYSQL_PASSWORD`
-- `MYSQL_ROOT_PASSWORD`
 
 Recommended deploy order on Render:
 1. Create the Blueprint from this repo.
-2. When prompted, enter secure MySQL passwords.
-3. Set `VITE_API_BASE_URL` to the backend public URL.
-4. Set `APP_CORS_ALLOWED_ORIGINS` to the frontend public URL.
-5. Deploy the stack.
+2. Set `VITE_API_BASE_URL` to the backend public URL.
+3. Set `APP_CORS_ALLOWED_ORIGINS` to the frontend public URL.
+4. Deploy the stack.
 
 Notes:
-- Render documents Docker-based services and Blueprint YAML in its official docs:
+- Render free Postgres is useful for demos, but it expires after 30 days. Upgrade it or move to another free Postgres provider before that date if you need to keep the data.
+- The optional Flask ML service is not included in the free Blueprint. The backend prediction fallback remains enabled.
+- Render documents Docker-based services, free deploys, and Blueprint YAML in its official docs:
   - https://render.com/docs/docker
+  - https://render.com/docs/free
   - https://render.com/docs/blueprint-spec
-  - https://render.com/docs/deploy-mysql
 - The frontend is configured as a static SPA with a rewrite to `index.html`.
 - The backend health check uses `/actuator/health`.
 

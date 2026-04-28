@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This project deploys as four services:
+This project deploys locally as four services:
 
 - React/Vite frontend
 - Spring Boot API
@@ -26,25 +26,29 @@ The Docker frontend build uses `VITE_USE_MOCK=false` by default. Local Compose b
 
 ## Render Blueprint
 
-The repo includes `render.yaml` for a Render Blueprint.
+The repo includes `render.yaml` for a free Render Blueprint:
+
+- React/Vite static site
+- Spring Boot Docker web service on the free plan
+- Render Postgres database on the free plan
 
 Create the Blueprint from the repository, then set these values when prompted:
 
-- `MYSQL_PASSWORD`: secure database user password
-- `MYSQL_ROOT_PASSWORD`: secure root password
 - `APP_CORS_ALLOWED_ORIGINS`: deployed frontend URL, for example `https://student-performance-frontend.onrender.com`
 - `VITE_API_BASE_URL`: deployed backend URL, for example `https://student-performance-backend.onrender.com`
 
 Keep `VITE_USE_MOCK=false` in production so the frontend uses the Spring Boot API.
 
+Render free Postgres databases expire after 30 days. For longer-lived demo data, upgrade the database or switch the `DATABASE_URL` environment variable to another Postgres provider.
+
 ## Optional ML Service
 
 The backend works without Flask because it has a local prediction fallback.
 
-To use the Flask service in production, set:
+To use the Flask service in production, deploy it separately and set:
 
 - `FLASK_PREDICTION_ENABLED=true`
-- `FLASK_PREDICTION_URL=http://ml-service:5000/predict`
+- `FLASK_PREDICTION_URL=<your Flask prediction URL>/predict`
 
 ## First Login
 
