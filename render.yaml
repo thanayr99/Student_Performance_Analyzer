@@ -25,7 +25,6 @@ services:
     plan: starter
     dockerfilePath: ./ml-service/Dockerfile
     dockerContext: ./ml-service
-    healthCheckPath: /health
 
   - type: web
     name: student-performance-backend
